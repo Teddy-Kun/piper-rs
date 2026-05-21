@@ -127,8 +127,8 @@ pub fn text_to_phonemes(
     let mut current = String::new();
 
     for line in text.lines() {
-        let text_cstr = CString::new(line)
-            .map_err(|_| ESpeakError("Text contains a null byte".into()))?;
+        let text_cstr =
+            CString::new(line).map_err(|_| ESpeakError("Text contains a null byte".into()))?;
 
         // espeak advances this pointer clause by clause, setting it to null when done.
         let mut text_ptr: *const c_char = text_cstr.as_ptr();

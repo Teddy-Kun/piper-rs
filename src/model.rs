@@ -72,17 +72,30 @@ pub fn infer(
     let input_lengths = Array1::<i64>::from_iter([input_len as i64]);
     let scales = Array1::<f32>::from_iter([noise_scale, length_scale, noise_w]);
 
-    let input_t = Tensor::<i64>::from_array(([1, input_len], input.into_raw_vec_and_offset().0.into_boxed_slice())).unwrap();
-    let lengths_t = Tensor::<i64>::from_array(([1], input_lengths.into_raw_vec_and_offset().0.into_boxed_slice())).unwrap();
-    let scales_t = Tensor::<f32>::from_array(([3], scales.into_raw_vec_and_offset().0.into_boxed_slice())).unwrap();
+    let input_t = Tensor::<i64>::from_array((
+        [1, input_len],
+        input.into_raw_vec_and_offset().0.into_boxed_slice(),
+    ))
+    .unwrap();
+    let lengths_t = Tensor::<i64>::from_array((
+        [1],
+        input_lengths.into_raw_vec_and_offset().0.into_boxed_slice(),
+    ))
+    .unwrap();
+    let scales_t =
+        Tensor::<f32>::from_array(([3], scales.into_raw_vec_and_offset().0.into_boxed_slice()))
+            .unwrap();
 
     let outputs = if config.num_speakers > 1 {
         let sid = Array1::<i64>::from_iter([speaker_id]);
-        let sid_t = Tensor::<i64>::from_array(([1], sid.into_raw_vec_and_offset().0.into_boxed_slice())).unwrap();
+        let sid_t =
+            Tensor::<i64>::from_array(([1], sid.into_raw_vec_and_offset().0.into_boxed_slice()))
+                .unwrap();
         session.run(ort::inputs![input_t, lengths_t, scales_t, sid_t])
     } else {
         session.run(ort::inputs![input_t, lengths_t, scales_t])
-    }.map_err(|e| PiperError::InferenceError(format!("Inference failed: {}", e)))?;
+    }
+    .map_err(|e| PiperError::InferenceError(format!("Inference failed: {}", e)))?;
 
     let (_, audio) = outputs[0]
         .try_extract_tensor::<f32>()

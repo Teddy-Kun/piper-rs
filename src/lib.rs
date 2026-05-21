@@ -8,8 +8,8 @@ use espeak_rs::text_to_phonemes;
 use ort::session::Session;
 use serde_json;
 
-pub use model::ModelConfig;
 use model::infer;
+pub use model::ModelConfig;
 
 #[derive(Debug)]
 pub enum PiperError {
@@ -51,10 +51,7 @@ impl Piper {
         })?;
         let session = Session::builder()
             .map_err(|e| {
-                PiperError::FailedToLoadResource(format!(
-                    "Failed to create session builder: {}",
-                    e
-                ))
+                PiperError::FailedToLoadResource(format!("Failed to create session builder: {}", e))
             })?
             .commit_from_file(model_path)
             .map_err(|e| {
