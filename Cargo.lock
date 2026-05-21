@@ -317,14 +317,14 @@ dependencies = [
 
 [[package]]
 name = "espeak-rs"
-version = "0.1.9"
+version = "0.2.0"
 dependencies = [
  "espeak-rs-sys",
 ]
 
 [[package]]
 name = "espeak-rs-sys"
-version = "0.1.9"
+version = "0.2.0"
 dependencies = [
  "bindgen 0.69.5",
  "cmake",
