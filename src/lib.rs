@@ -4,7 +4,6 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
 
-use espeak_rs::text_to_phonemes;
 use ort::session::Session;
 use serde_json;
 
@@ -83,9 +82,32 @@ impl Piper {
         let phonemes = if is_phonemes {
             text.to_string()
         } else {
-            text_to_phonemes(text, &self.config.espeak.voice, None)
-                .map_err(|e| PiperError::PhonemizationError(format!("{}", e)))?
-                .join(" ")
+            #[cfg(feature = "espeak-rs")]
+            {
+                use espeak_rs::text_to_phonemes;
+
+                text_to_phonemes(text, &self.config.espeak.voice, None)
+                    .map_err(|e| PiperError::PhonemizationError(format!("{}", e)))?
+                    .join(" ")
+            }
+
+            #[cfg(feature = "espeak-ng")]
+            {
+                use espeak_ng::text_to_ipa;
+
+                text_to_ipa(self.config.espeak.voice.as_str(), text)
+                    .map_err(|e| PiperError::PhonemizationError(format!("{}", e)))?
+            }
+
+            #[cfg(all(feature = "espeak-rs", feature = "espeak-ng"))]
+            {
+                compile_error!("Only use one, espeak-rs or espeak-ng")
+            }
+
+            #[cfg(not(any(feature = "espeak-rs", feature = "espeak-ng")))]
+            {
+                compile_error!("One of espeak-rs or espeak-ng is required")
+            }
         };
 
         let inf = &self.config.inference;

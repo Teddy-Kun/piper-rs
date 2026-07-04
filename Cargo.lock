@@ -316,6 +316,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "espeak-ng"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "083cee3337773bfa7f1c38fe022dab392438ced57f3a64c883011952d13b83a1"
+dependencies = [
+ "bitflags 2.11.1",
+ "thiserror",
+]
+
+[[package]]
 name = "espeak-rs"
 version = "0.2.0"
 dependencies = [
@@ -961,6 +971,7 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 name = "piper-rs"
 version = "0.2.0"
 dependencies = [
+ "espeak-ng",
  "espeak-rs",
  "ndarray 0.16.1",
  "ort",
